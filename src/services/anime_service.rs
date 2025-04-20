@@ -1,8 +1,8 @@
 use sqlx::SqlitePool;
 
-use crate::models::{Anime, AnimeStatus};
 use chrono::Utc;
 use uuid::Uuid;
+use crate::models::anime::{Anime, AnimeStatus};
 
 pub struct AnimeService {
     pool: SqlitePool,

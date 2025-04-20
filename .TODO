@@ -1,3 +1,3 @@
-- [ ] Refactor into multiple modules
+- [x] Refactor into multiple modules
 - [ ] Read from csv and persist into database
 - [ ] Get data from public anime API
