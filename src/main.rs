@@ -1,7 +1,8 @@
 mod cli;
-mod models;
+mod domain;
 mod services;
 mod storage;
+mod models;
 
 use crate::cli::anime_cli::initialize_cli;
 
