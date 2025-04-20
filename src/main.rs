@@ -4,8 +4,9 @@ use uuid::Uuid;
 
 mod models;
 mod storage;
-use crate::models::AnimeStatus;
-use models::Anime;
+mod services;
+
+use services::AnimeService;
 use storage::{get_db_pool, run_migrations};
 
 #[derive(Parser)]
@@ -32,35 +33,15 @@ async fn main() {
 
     let pool = get_db_pool().await;
     run_migrations(&pool).await;
+    
+    let anime_service = AnimeService::new(pool.clone());
 
     match &cli.command {
         Commands::Add { title, episodes } => {
-            let anime = Anime {
-                id: Uuid::new_v4(),
-                title: title.clone(),
-                episodes_watched: *episodes,
-                total_episodes: None,
-                status: AnimeStatus::Watching,
-                added_at: Utc::now(),
-            };
-
-            sqlx::query(
-                r#"
-                INSERT INTO animes (id, title, episodes_watched, total_episodes, status, added_at)
-                VALUES (?1, ?2, ?3, ?4, ?5, ?6)
-                "#,
-            )
-            .bind(anime.id.to_string())
-            .bind(&anime.title)
-            .bind(anime.episodes_watched as i32)
-            .bind(anime.total_episodes.map(|x| x as i32))
-            .bind(&anime.status.to_string())
-            .bind(anime.added_at.to_rfc3339())
-            .execute(&pool)
-            .await
-            .unwrap();
-
-            println!("✅ Added: {}", anime.title);
+            match anime_service.add_anime(title.clone(), Some(*episodes)).await {
+                Ok(anime) => println!("✅ Added: {}", anime.title),
+                Err(e) => eprintln!("❌ Error adding anime: {}", e),
+            }
         }
         Commands::List => {
             println!("Your anime list:");
