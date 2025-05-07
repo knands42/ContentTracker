@@ -1,0 +1,8 @@
+# IDE
+.idea/
+.junie/
+
+# Others
+logs/
+nginx/logs/
+fluent-bit/data

@@ -1,0 +1,6 @@
+.junie/
+docs/
+logs/
+nginx/
+.gitignore
+README.md

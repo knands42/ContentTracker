@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - app
+    networks:
+      - app-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - app-network
+
+  fluent-bit:
+    image: cr.fluentbit.io/fluent/fluent-bit
+    container_name: fluent-bit
+    volumes:
+      - ./fluent-bit/conf/:/fluent-bit/etc/
+      - ./logs/:/var/log/app.log
+      - ./nginx/logs/:/var/log/nginx/
+      - ./fluent-bit/data/:/var/log/
+    ports:
+      - 2020:2020
+    networks:
+      - app-network
+    restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
